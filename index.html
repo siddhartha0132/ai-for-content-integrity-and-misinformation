@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Content Credibility Analyzer</title>
+    <style>
+      body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+        h1 {
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result, .error {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .result {
+            background-color: #e6ffed;
+            border: 1px solid #b2dfdb;
+        }
+        .error {
+            background-color: #ffe6e6;
+            border: 1px solid #f44336;
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Content Credibility Analyzer</h1>
+        <textarea id="content" placeholder="Enter the text you want to analyze..."></textarea>
+        <button id="analyzeButton">Analyze Content</button>
+
+        <div id="result" class="result" style="display: none;">
+            <h3>Credibility Score:</h3>
+            <p id="credibilityScore"></p>
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.getElementById("analyzeButton").addEventListener("click", async function () {
+            const content = document.getElementById("content").value.trim();
+            const resultDiv = document.getElementById("result");
+            const errorDiv = document.getElementById("error");
+            const scoreElement = document.getElementById("credibilityScore");
+
+            resultDiv.style.display = "none";
+            errorDiv.style.display = "none";
+            scoreElement.textContent = "";
+
+            if (!content) {
+                errorDiv.textContent = "Please enter some content to analyze!";
+                errorDiv.style.display = "block";
+                return;
+            }
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/analyze", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ content })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.style.display = "block";
+                    scoreElement.textContent = `Sentiment: ${data.sentiment}\nBias: ${data.bias}\nScore: ${data.credibility_score}`;
+                } else {
+                    errorDiv.textContent = data.error || "An error occurred while analyzing the content.";
+                    errorDiv.style.display = "block";
+                }
+            } catch (error) {
+                errorDiv.textContent = "There was an error with the request.";
+                errorDiv.style.display = "block";
+            }
+        });
+    </script>
+
+</body>
+</html>
