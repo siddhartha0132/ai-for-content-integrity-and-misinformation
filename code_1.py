@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 # ✅ Initialize OpenAI client (Make sure your key is valid and not expired)
-client = OpenAI(api_key="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")  # ← insert your actual key here
+client = OpenAI(api_key="insert your actual key ")  # ← insert your actual key here
 
 @app.route('/analyze', methods=['POST'])
 def analyze_content():
